@@ -73,6 +73,7 @@ describe('<Button />', () => {
       for (const file of Object.values(testState.generatedSpecs) as string[]) {
         fs.removeSync(path.join(projectRoot, file))
       }
+      fs.removeSync(path.join(projectRoot, 'cypress/integration'))
     })
   })
 
@@ -83,7 +84,7 @@ describe('<Button />', () => {
 
     cy.findByText('Generate From Story').should('not.be.disabled').click()
 
-    cy.get('li').contains('Button.stories.jsx').as('codeGen').click()
+    cy.contains('Button.stories.jsx').as('codeGen').click()
     cy.wait('@codeGenSpec')
 
     cy.withCtx((ctx, { testState }) => {
@@ -123,7 +124,7 @@ describe('<Button />', () => {
 
     cy.findByText('Generate From Component').click()
 
-    cy.get('li').contains('Button.jsx').as('codeGen').click()
+    cy.contains('Button.jsx').as('codeGen').click()
     cy.wait('@codeGenSpec')
 
     cy.withCtx((ctx, { testState }) => {
@@ -200,5 +201,15 @@ describe('<Button />', () => {
         ctx.fs.constants.F_OK,
       )
     })
+  })
+
+  it('should scaffold integration specs', () => {
+    cy.visitApp('#/newspec')
+    cy.wait(1000)
+
+    cy.findByText('Scaffold Integration').click()
+    // The "scaffold-integration" template is not static so we can't assert against the files
+    // it produces, but there should be at least one
+    cy.get('[data-cy="scaffold-integration-file"]').should('have.length.greaterThan', 0)
   })
 })

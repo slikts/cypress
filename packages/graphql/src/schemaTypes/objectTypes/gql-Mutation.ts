@@ -2,6 +2,7 @@ import { arg, booleanArg, enumType, idArg, mutationType, nonNull, stringArg } fr
 import { CodeGenTypeEnum } from '..'
 import { CodeLanguageEnum, FrontendFrameworkEnum, NavItemEnum, SupportedBundlerEnum, TestingTypeEnum } from '../enumTypes/gql-WizardEnums'
 import { WizardUpdateInput } from '../inputTypes/gql-WizardUpdateInput'
+import { CodeGenResultWithFileParts } from './gql-CodeGenResult'
 import { Wizard } from './gql-Wizard'
 
 export const mutation = mutationType({
@@ -188,6 +189,13 @@ export const mutation = mutationType({
       },
       resolve: async (_, args, ctx) => {
         await ctx.actions.project.codeGenSpec(args.codeGenCandidate, args.type)
+      },
+    })
+
+    t.nonNull.list.nonNull.field('scaffoldIntegration', {
+      type: CodeGenResultWithFileParts,
+      resolve: (src, args, ctx) => {
+        return ctx.actions.project.scaffoldIntegration()
       },
     })
 

@@ -14,9 +14,12 @@
       <Button @click="codeGenTypeClicked('integration')">
         Generate Integration
       </Button>
+      <Button @click="codeGenTypeClicked('scaffoldIntegration'); scaffoldIntegration.executeMutation({})">
+        Scaffold Integration
+      </Button>
     </div>
     <template v-if="codeGenType">
-      <template v-if="codeGenType !== 'integration'">
+      <template v-if="codeGenType === 'component' || codeGenType === 'story'">
         <div class="p-16px">
           <Input
             id="glob-pattern"
@@ -49,9 +52,28 @@
             v-model="fileNameInput"
             class="flex-auto"
           />
-          <Button @Click="candidateClick(fileNameInput)">
+          <Button @click="candidateClick(fileNameInput)">
             Generate Spec
           </Button>
+        </div>
+      </template>
+      <template v-else-if="codeGenType === 'scaffoldIntegration'">
+        <div v-if="scaffoldIntegration.data.value">
+          <ul>
+            <li
+              v-for="generatedSpec of scaffoldIntegration.data.value.scaffoldIntegration"
+              :key="generatedSpec.fileParts.absolute"
+              data-cy="scaffold-integration-file"
+            >
+              <RouterLink
+                :key="generatedSpec.fileParts.absolute"
+                class="text-left"
+                :to="{ path: 'runner', query: { file: generatedSpec.fileParts.relative } }"
+              >
+                {{ generatedSpec.fileParts.relative }}
+              </RouterLink>
+            </li>
+          </ul>
         </div>
       </template>
       <div
@@ -79,7 +101,7 @@ import Button from '@cy/components/Button.vue'
 import Input from '@cy/components/Input.vue'
 import { gql, useMutation, useQuery } from '@urql/vue'
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import {
   NewSpec_NewSpecQueryDocument,
   NewSpec_SearchCodeGenCandidatesDocument,
@@ -87,6 +109,7 @@ import {
   NewSpec_CodeGenSpecDocument,
   NewSpec_SetCurrentSpecDocument,
   CodeGenType,
+  NewSpec_ScaffoldIntegrationDocument,
 } from '../generated/graphql'
 
 gql`
@@ -161,6 +184,24 @@ gql`
   }
 `
 
+gql`
+  mutation NewSpec_ScaffoldIntegration {
+    scaffoldIntegration {
+      codeGenResult {
+        content
+        status
+      }
+      fileParts {
+        absolute
+        relative
+        baseName
+        name
+        fileName
+      }
+    }
+  }
+`
+
 const newSpecQuery = useQuery({ query: NewSpec_NewSpecQueryDocument })
 
 const codeGenType = ref<CodeGenType | null>(null)
@@ -211,6 +252,8 @@ const generatedSpec = computed(
 
 const setSpecMutation = useMutation(NewSpec_SetCurrentSpecDocument)
 const router = useRouter()
+
+const scaffoldIntegration = useMutation(NewSpec_ScaffoldIntegrationDocument)
 
 async function specClick () {
   const specId = newSpecQuery.data.value?.app.activeProject?.generatedSpec?.spec.id

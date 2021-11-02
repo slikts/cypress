@@ -10,7 +10,7 @@ export interface ProjectShape {
   projectRoot: string
 }
 
-const GeneratedSpec = objectType({
+export const GeneratedSpec = objectType({
   name: 'GeneratedSpec',
   definition (t) {
     t.nonNull.id('id', {
