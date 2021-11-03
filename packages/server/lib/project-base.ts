@@ -57,7 +57,6 @@ export interface Cfg extends ReceivedCypressOptions {
 const localCwd = cwd()
 
 const debug = Debug('cypress:server:project')
-const debugScaffold = Debug('cypress:server:scaffold')
 
 type StartWebsocketOptions = Pick<Cfg, 'socketIoCookie' | 'namespace' | 'screenshotsFolder' | 'report' | 'reporter' | 'reporterOptions' | 'projectRoot'>
 
@@ -743,11 +742,7 @@ export class ProjectBase<TServer extends Server> extends EE {
       throw new Error('Missing integration folder')
     }
 
-    const untouchedScaffold = await this.determineIsNewProject(theCfg)
-    const userHasSeenBanner = _.get(theCfg, 'state.showedNewProjectBanner', false)
-
-    debugScaffold(`untouched scaffold ${untouchedScaffold} banner closed ${userHasSeenBanner}`)
-    theCfg.isNewProject = untouchedScaffold && !userHasSeenBanner
+    theCfg.isNewProject = false
 
     const cfgWithSaved = await this._setSavedState(theCfg)
 
@@ -843,7 +838,7 @@ export class ProjectBase<TServer extends Server> extends EE {
       CYPRESS_INTERNAL_FORCE_SCAFFOLD: process.env.CYPRESS_INTERNAL_FORCE_SCAFFOLD,
     })
 
-    const scaffoldExamples = !cfg.isTextTerminal || process.env.CYPRESS_INTERNAL_FORCE_SCAFFOLD
+    const scaffoldExamples = process.env.CYPRESS_INTERNAL_FORCE_SCAFFOLD
 
     if (scaffoldExamples) {
       debug('will scaffold integration and fixtures folder')
