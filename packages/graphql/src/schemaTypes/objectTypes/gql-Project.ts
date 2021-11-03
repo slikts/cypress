@@ -4,28 +4,12 @@ import { ProjectPreferences } from '.'
 import { cloudProjectBySlug } from '../../stitching/remoteGraphQLCalls'
 import { CodeGenTypeEnum } from '../enumTypes/gql-CodeGenTypeEnum'
 import { FileParts } from './gql-FileParts'
+import { GeneratedSpec } from './gql-GeneratedSpec'
 
 export interface ProjectShape {
   projectId?: string | null
   projectRoot: string
 }
-
-export const GeneratedSpec = objectType({
-  name: 'GeneratedSpec',
-  definition (t) {
-    t.nonNull.id('id', {
-      resolve: (src, args, ctx) => src.spec.absolute,
-    })
-
-    t.nonNull.string('content', {
-      description: 'File content of most recently generated spec.',
-    })
-
-    t.nonNull.field('spec', {
-      type: FileParts,
-    })
-  },
-})
 
 export const Project = objectType({
   name: 'Project',

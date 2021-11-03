@@ -1,17 +1,8 @@
-import { enumType, objectType } from 'nexus'
+import { objectType } from 'nexus'
 import { FileParts } from '.'
+import { CodeGenGenResultTypeEnum, CodeGenResultStatusEnum } from '../enumTypes/gql-CodeGenResultEnum'
 
-const CodeGenResultStatusEnum = enumType({
-  name: 'CodeGenStatus',
-  members: ['add', 'overwrite', 'skipped'],
-})
-
-const CodeGenGenResultTypeEnum = enumType({
-  name: 'CodeGenGenResultType',
-  members: ['text', 'binary'],
-})
-
-export const CodeGenResult = objectType({
+const CodeGenResult = objectType({
   name: 'CodeGenResult',
   description: 'Represents a spec on the file system',
   node: 'file',
