@@ -17,7 +17,7 @@ module.exports = {
   },
 
   getPathToIntegration() {
-    return path.join(__dirname, '../cypress/integration')
+    return path.join(__dirname, '..', 'cypress', 'integration')
   },
 
   getPathToExampleFolders () {
