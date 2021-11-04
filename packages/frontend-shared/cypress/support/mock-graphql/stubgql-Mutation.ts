@@ -118,6 +118,5 @@ export const stubMutation: MaybeResolver<Mutation> = {
         fileName: 'todo',
       },
     }]
-  }
   },
 }
